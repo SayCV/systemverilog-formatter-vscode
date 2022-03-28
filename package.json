@@ -18,6 +18,7 @@
 	],
 	"activationEvents": [
 		"onLanguage:systemverilog",
+		"onLanguage:verilog",
 		"onCommand:systemverilog-formatter-vscode.format"
 	],
 	"main": "./out/extension.js",
@@ -30,6 +31,7 @@
 					"systemverilog"
 				],
 				"extensions": [
+					".v",
 					".sv",
 					".svh"
 				]

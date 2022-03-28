@@ -82,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
     : "";
 
   vscode.languages.registerDocumentRangeFormattingEditProvider(
-    "systemverilog",
+    [{ scheme: 'file', language: 'verilog' }, { scheme: 'file', language: 'systemverilog' }],
     {
       provideDocumentRangeFormattingEdits(
         document: vscode.TextDocument,
