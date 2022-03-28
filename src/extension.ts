@@ -1,40 +1,13 @@
 import * as vscode from "vscode";
-import { readFileSync } from "fs";
+var fs = require('fs');
 import { join, dirname } from "path";
 import * as child from "child_process";
 
+import { log } from "./log";
+
 // Constants
 const extensionName = "systemverilog-formatter-vscode";
-const extensionID = "bmpenuelas." + extensionName;
-const extensionPath = vscode.extensions.getExtension(extensionID)
-  ?.extensionPath as string;
-const verible_release_info_path = join(
-  extensionPath,
-  "verible_release_info.json"
-);
-const extensionCfg = vscode.workspace.getConfiguration(
-  "systemverilogFormatter"
-);
-const veribleReleaseInfo = JSON.parse(
-  readFileSync(verible_release_info_path).toString()
-);
-const usedVeribleBuild = (() => {
-  if (extensionCfg.veribleBuild == "") return "";
-  if (extensionCfg.veribleBuild == "none") return "";
-  for (const build in veribleReleaseInfo["release_subdirs"]) {
-    let buildStr = veribleReleaseInfo["release_subdirs"][build];
-    if (buildStr.startsWith(extensionCfg.veribleBuild)) return buildStr;
-  }
-})();
-const veribleBinPath = usedVeribleBuild
-  ? join(
-      extensionPath,
-      "verible_release",
-      usedVeribleBuild,
-      "verible-" + veribleReleaseInfo["tag"],
-      "bin"
-    )
-  : "";
+const extensionID = "saycv." + extensionName;
 
 // Get range of document
 const textRange = (document: vscode.TextDocument) =>
@@ -45,6 +18,7 @@ const textRange = (document: vscode.TextDocument) =>
 
 // Format file
 const format = (
+  veribleBinPath: string,
   filePath: string,
   documentText: string,
   lines: Array<Array<number>> = [],
@@ -54,7 +28,7 @@ const format = (
   if (lines.length > 0)
     params.push(
       "--lines " +
-        lines.map((range) => range.map((line) => line + 1).join("-")).join(",")
+      lines.map((range) => range.map((line) => line + 1).join("-")).join(",")
     );
   if (inPlace) params.push("--inplace");
   let runLocation = dirname(filePath);
@@ -72,6 +46,41 @@ const format = (
 
 // Extension is activated
 export function activate(context: vscode.ExtensionContext) {
+
+  const extensionPath = context.extensionPath;
+  const verible_release_info_path = join(
+    extensionPath,
+    "verible_release_info.json"
+  );
+  const extensionCfg = vscode.workspace.getConfiguration(
+    "systemverilogFormatter"
+  );
+  const veribleReleaseInfo = (() => {
+    if (!isExistsPath(verible_release_info_path)) {
+      return;
+    }
+    return JSON.parse(
+      fs.readFileSync(verible_release_info_path).toString());
+  })(); 
+
+  const usedVeribleBuild = (() => {
+    if (extensionCfg.veribleBuild == "") return "";
+    if (extensionCfg.veribleBuild == "none") return "";
+    for (const build in veribleReleaseInfo["release_subdirs"]) {
+      let buildStr = veribleReleaseInfo["release_subdirs"][build];
+      if (buildStr.startsWith(extensionCfg.veribleBuild)) return buildStr;
+    }
+  })();
+  const veribleBinPath = usedVeribleBuild
+    ? join(
+      extensionPath,
+      "verible_release",
+      usedVeribleBuild,
+      "verible-" + veribleReleaseInfo["tag"],
+      "bin"
+    )
+    : "";
+
   vscode.languages.registerDocumentRangeFormattingEditProvider(
     "systemverilog",
     {
@@ -86,7 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
         return [
           vscode.TextEdit.replace(
             textRange(document),
-            format(filePath, currentText, lines)
+            format(veribleBinPath, filePath, currentText, lines)
           ),
         ];
       },
@@ -95,28 +104,27 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Command: formatDocument
   let formatDocument = vscode.commands.registerCommand(
-    extensionName + ".formatDocument",
+    "extension." + extensionName + ".formatDocument",
     () => {
       var editor = vscode.window.activeTextEditor;
       if (editor) {
         let document = editor.document as vscode.TextDocument;
         let filePath = document.uri.fsPath as string;
         let currentText = document.getText();
-        format(filePath, currentText);
+        format(veribleBinPath, filePath, currentText);
         editor.edit((editBuilder) =>
           editBuilder.replace(
             textRange(document),
-            format(filePath, currentText)
+            format(veribleBinPath, filePath, currentText)
           )
         );
       }
     }
   );
-  context.subscriptions.push(formatDocument);
 
   // Command: formatSelection
   let formatSelection = vscode.commands.registerCommand(
-    extensionName + ".formatSelection",
+    "extension." + extensionName + ".formatSelection",
     () => {
       var editor = vscode.window.activeTextEditor;
       if (editor) {
@@ -129,15 +137,37 @@ export function activate(context: vscode.ExtensionContext) {
           editor.edit((editBuilder) =>
             editBuilder.replace(
               textRange(document),
-              format(filePath, currentText, lines)
+              format(veribleBinPath, filePath, currentText, lines)
             )
           );
         }
       }
     }
   );
-  context.subscriptions.push(formatSelection);
+
+  var commands = [
+    formatDocument,
+    formatSelection
+  ];
+  commands.forEach(function (command) {
+    context.subscriptions.push(command);
+  });
+
+  log.info(`${extensionName} extension has been activated.`);
 }
 
 // Extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
+
+function isExistsPath(path: string) {
+  if (path.length === 0) {
+    return false;
+  }
+  try {
+    fs.accessSync(path);
+    return true;
+  } catch (error) {
+    console.warn(error.message);
+    return false;
+  }
+}

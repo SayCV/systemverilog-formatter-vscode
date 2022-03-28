@@ -1,89 +1,95 @@
 {
-  "name": "systemverilog-formatter-vscode",
-  "displayName": "SystemVerilog Formatter",
-  "description": "Beautify SystemVerilog code in VSCode through Verible",
-  "icon": "img/logo.png",
-  "version": "2.14.0",
-  "publisher": "bmpenuelas",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/bmpenuelas/systemverilog-formatter-vscode.git"
-  },
-  "engines": {
-    "vscode": "^1.44.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onLanguage:systemverilog",
-    "onCommand:systemverilog-formatter-vscode.format"
-  ],
-  "main": "./out/extension.js",
-  "contributes": {
-    "languages": [
-      {
-        "id": "systemverilog",
-        "aliases": [
-          "System Verilog",
-          "systemverilog"
-        ],
-        "extensions": [
-          ".sv",
-          ".svh"
-        ]
-      }
-    ],
-    "commands": [
-      {
-        "command": "systemverilog-formatter-vscode.formatDocument",
-        "title": "SystemVerilog Formatter - Format this file"
-      },
-      {
-        "command": "systemverilog-formatter-vscode.formatSelection",
-        "title": "SystemVerilog Formatter - Format selection"
-      }
-    ],
-    "configuration": {
-      "type": "str",
-      "title": "SystemVerilog Formatter",
-      "properties": {
-        "systemverilogFormatter.veribleBuild": {
-          "type": "string",
-          "description": "Verible build. Select a prebuilt one or \"none\" if you have your own build and the binaries are in your PATH",
-          "default": "Ubuntu-19",
-          "enum": [
-            "CentOS-8",
-            "Ubuntu-14",
-            "Ubuntu-16",
-            "Ubuntu-18",
-            "Ubuntu-19",
-            "none"
-          ]
-        }
-      }
-    }
-  },
-  "scripts": {
-    "vscode:prepublish": "python3 scripts/update_dependencies.py && npm run compile",
-    "compile": "tsc -p ./",
-    "lint": "eslint src --ext ts",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "test": "node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.44.0",
-    "@types/glob": "^7.1.1",
-    "@types/mocha": "^7.0.2",
-    "@types/node": "^13.11.0",
-    "eslint": "^6.8.0",
-    "@typescript-eslint/parser": "^2.26.0",
-    "@typescript-eslint/eslint-plugin": "^2.26.0",
-    "glob": "^7.1.6",
-    "mocha": "^7.1.1",
-    "typescript": "^3.8.3",
-    "vscode-test": "^1.3.0"
-  }
+	"name": "systemverilog-formatter-vscode",
+	"displayName": "SystemVerilog Formatter",
+	"description": "Beautify SystemVerilog code in VSCode through Verible",
+	"icon": "img/logo.png",
+	"version": "3.0.0",
+	"publisher": "SayCV",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/SayCV/systemverilog-formatter-vscode.git"
+	},
+	"engines": {
+		"vscode": "^1.44.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onLanguage:systemverilog",
+		"onCommand:systemverilog-formatter-vscode.format"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"languages": [
+			{
+				"id": "systemverilog",
+				"aliases": [
+					"System Verilog",
+					"systemverilog"
+				],
+				"extensions": [
+					".sv",
+					".svh"
+				]
+			}
+		],
+		"commands": [
+			{
+				"command": "systemverilog-formatter-vscode.formatDocument",
+				"title": "SystemVerilog Formatter - Format this file"
+			},
+			{
+				"command": "systemverilog-formatter-vscode.formatSelection",
+				"title": "SystemVerilog Formatter - Format selection"
+			}
+		],
+		"configuration": {
+			"type": "str",
+			"title": "SystemVerilog Formatter",
+			"properties": {
+				"systemverilogFormatter.veribleBuild": {
+					"type": "string",
+					"description": "Verible build. Select a prebuilt one or \"none\" if you have your own build and the binaries are in your PATH",
+					"default": "Ubuntu-19",
+					"enum": [
+						"CentOS-8",
+						"Ubuntu-14",
+						"Ubuntu-16",
+						"Ubuntu-18",
+						"Ubuntu-19",
+						"none"
+					]
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "python3 scripts/update_dependencies.py && npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"@types/vscode": "^1.44.0",
+		"@typescript-eslint/eslint-plugin": "^2.26.0",
+		"@typescript-eslint/parser": "^2.26.0",
+		"eslint": "^6.8.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.1.1",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0"
+	},
+	"__metadata": {
+		"id": "220fcfa2-f743-49b7-86d5-a225d7d795ad",
+		"publisherDisplayName": "SayCV",
+		"publisherId": "75dbbbda-e249-4e08-baa1-1332e904fcb5",
+		"isPreReleaseVersion": false
+	}
 }
